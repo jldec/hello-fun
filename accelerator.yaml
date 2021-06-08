@@ -1,0 +1,38 @@
+accelerator:
+  displayName: Hello Fun
+  description: Simple Hello Web app based on Spring Boot and Spring Cloud Function
+  iconUrl: https://raw.githubusercontent.com/simple-starters/icons/master/icon-cloud.png
+  tags:
+    - Java
+    - Spring
+    - Function
+  options:
+    - name: artifactId
+      label: Name for Maven and Kubernetes resources
+      description: Maven artifactId and name, Kubernetes deployment, service, and image name
+      required: true
+      dataType: string
+      inputType: text
+
+engine:
+  resources:
+    - name: README
+      includes: ["README.md"]
+      transformations:
+        replace:
+          - token: "hello-fun template repo"
+            with: "#artifactId"
+    - name: maven-pom
+      includes: ["pom.xml"]
+      transformations:
+        replace:
+          - token: hello-fun
+            with: "#artifactId"
+    - name: k8s-configuration
+      includes: ["**/*.yaml"]
+      transformations:
+        replace:
+          - token: hello-fun
+            with: "#artifactId"
+    - name: the-rest
+      includes: ["**"]
