@@ -13,10 +13,11 @@ accelerator:
       description: Select one of deployment configuration options to include the files for that style of deployment.
       inputType: select
       choices:
+        no-k8s: No Kubernetes
         k8s-resource-simple: Kubernetes deployment and service
         k8s-resource-skaffold: Kubernetes using skaffold
-      required: false
-      defaultValue: ""
+      required: true
+      defaultValue: k8s-resource-simple
 
 engineV2:
   type: Merge
