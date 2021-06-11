@@ -7,19 +7,69 @@ accelerator:
     - Spring
     - Function
 
-engine:
-  resources:
-    - name: readme
-      includes: ["README.md"]
+  options:
+    - name: k8sConfig
+      label: Kubernetes deployment configurations
+      description: Select one of deployment configuration options to include the files for that style of deployment.
+      inputType: select
+      choices:
+        k8s-resource-simple: Kubernetes deployment and service
+        k8s-resource-skaffold: Kubernetes using skaffold
+      required: false
+      defaultValue: ""
+
+engineV2:
+  type: Merge
+  sources:
+    - type: Chain
       transformations:
-        replace:
-          - token: "hello-fun template repo"
-            with: "#artifactId"
-    - name: mvn-k8s
-      includes: ["pom.xml","**/*.yaml"]
+        - type: Include
+          patterns: [ "**" ]
+        - type: Exclude
+          patterns: [ "accelerator.yaml", "README.md", "pom.xml", "kubernetes/**/*.yaml", "skaffold.yaml" ]
+
+    - type: Chain
       transformations:
-        replace:
-          - token: hello-fun
-            with: "#artifactId"
-    - name: the-rest
-      includes: ["**"]
+        - type: Include
+          patterns: [ "README.md" ]
+        - type: UseEncoding
+          encoding: UTF-8
+        - type: ReplaceText
+          substitutions:
+            - text: hello-fun template repo
+              with: "#artifactId"
+
+    - type: Chain
+      condition: "#k8sConfig == 'k8s-resource-simple'"
+      transformations:
+        - type: Include
+          patterns: [ "kubernetes/app/*.yaml" ]
+        - type: UseEncoding
+          encoding: UTF-8
+        - type: ReplaceText
+          substitutions:
+            - text: hello-fun
+              with: "#artifactId"
+
+    - type: Chain
+      condition: "#k8sConfig == 'k8s-resource-skaffold'"
+      transformations:
+        - type: Include
+          patterns: [ "kubernetes/skaffold/*.yaml", "skaffold.yaml" ]
+        - type: UseEncoding
+          encoding: UTF-8
+        - type: ReplaceText
+          substitutions:
+            - text: hello-fun
+              with: "#artifactId"
+
+    - type: Chain
+      transformations:
+        - type: Include
+          patterns: [ "pom.xml" ]
+        - type: UseEncoding
+          encoding: UTF-8
+        - type: ReplaceText
+          substitutions:
+            - text: hello-fun
+              with: "#artifactId"

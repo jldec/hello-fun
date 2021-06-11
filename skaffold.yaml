@@ -1,0 +1,30 @@
+apiVersion: skaffold/v2beta6
+kind: Config
+metadata:
+  name: hello-fun
+build:
+  artifacts:
+  - image: hello-fun
+    buildpacks:
+      builder: paketobuildpacks/builder:base
+      dependencies:
+        paths:
+          - src
+          - pom.xml
+  tagPolicy:
+    sha256: {}
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes/skaffold/deployment.yaml
+    - kubernetes/skaffold/service.yaml
+portForward:
+  - resourceType: service
+    resourceName: hello-fun
+    port: 80
+    localPort: 8080
+profiles:
+  - name: local
+    build:
+      local:
+        push: false
