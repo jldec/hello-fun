@@ -52,4 +52,4 @@ engine:
     - type: ReplaceText
       substitutions:
       - text: hello-fun
-        with: "#artifactId"
+        with: "#artifactIds"
