@@ -9,7 +9,7 @@ accelerator:
 
   options:
   - name: k8sConfig
-    label: Kubernetes deployment configurations
+    label: Deployment
     display: true
     description: Select one of deployment configuration options to include the files for that style of deployment.
     inputType: select
