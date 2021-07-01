@@ -3,23 +3,53 @@ accelerator:
   description: Simple Hello Web app based on Spring Boot and Spring Cloud Function
   iconUrl: https://raw.githubusercontent.com/simple-starters/icons/master/icon-cloud.png
   tags:
-    - Java
-    - Spring
-    - Function
+  - Java
+  - Spring
+  - Function
+
+  options:
+  - name: k8sConfig
+    label: Deployment
+    display: true
+    description: Select one of deployment configuration options to include the files for that style of deployment.
+    inputType: select
+    choices:
+      no-k8s: No Kubernetes
+      k8s-resource-simple: Kubernetes deployment and service
+      k8s-resource-skaffold: Kubernetes using skaffold
+    defaultValue: k8s-resource-simple
 
 engine:
-  resources:
-    - name: readme
-      includes: ["README.md"]
-      transformations:
-        replace:
-          - token: "hello-fun template repo"
-            with: "#artifactId"
-    - name: mvn-k8s
-      includes: ["pom.xml","**/*.yaml"]
-      transformations:
-        replace:
-          - token: hello-fun
-            with: "#artifactId"
-    - name: the-rest
-      includes: ["**"]
+  sources:
+  - includes: [ "**" ]
+    excludes: [ "kubernetes/**/*.yaml", "skaffold.yaml" ]
+
+  - includes: [ "README.md" ]
+    transformations:
+    - type: ReplaceText
+      substitutions:
+      - text: hello-fun template repo
+        with: "#artifactId"
+
+  - includes: [ "pom.xml" ]
+    transformations:
+    - type: ReplaceText
+      substitutions:
+      - text: hello-fun
+        with: "#artifactId"
+
+  - condition: "#k8sConfig == 'k8s-resource-simple'"
+    includes: [ "kubernetes/app/*.yaml" ]
+    transformations:
+    - type: ReplaceText
+      substitutions:
+      - text: hello-fun
+        with: "#artifactId"
+
+  - condition: "#k8sConfig == 'k8s-resource-skaffold'"
+    includes: [ "kubernetes/skaffold/*.yaml", "skaffold.yaml" ]
+    transformations:
+    - type: ReplaceText
+      substitutions:
+      - text: hello-fun
+        with: "#artifactId"
